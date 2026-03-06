@@ -21,7 +21,7 @@ models/
 
 # Data & Vector Stores
 data/vector_store/
-data/processed_chunks/
+data/raw_docs/
 # Note: Keeping data/raw_docs/ commented out so your sample HTML files push to GitHub,
 # but uncomment the next line if you don't want to push your raw data.
 # data/raw_docs/
@@ -34,3 +34,4 @@ mlruns/
 .idea/
 .DS_Store
 Thumbs.db
+/.github
