@@ -1,0 +1,38 @@
+# ==========================================
+# Enterprise Knowledge Assistant (Phase 1)
+# OS: Windows | Hardware: NVIDIA T4 (16GB)
+# ==========================================
+
+# 1. Core ML & LLM Libraries (Hugging Face ecosystem)
+transformers>=4.38.0
+accelerate>=0.27.0
+bitsandbytes>=0.43.0  # Recent versions have native Windows support
+sentence-transformers>=2.5.0
+optimum>=1.17.0
+
+# 2. Agent & Orchestration (LangChain ecosystem)
+langchain>=0.1.13
+langchain-core>=0.1.33
+langchain-community>=0.0.29
+langchain-text-splitters>=0.0.1
+langchain-huggingface>=0.0.1
+langgraph>=0.0.26
+
+# 3. Vector Store & Search
+# Note: faiss-cpu is used here because faiss-gpu pip wheels are notoriously
+# unstable on Windows. Since embeddings are computed on the T4 GPU,
+# FAISS index searching on the CPU is plenty fast for our current scale.
+faiss-cpu>=1.8.0
+
+# 4. Data Processing & Parsing
+beautifulsoup4>=4.12.3
+lxml>=5.1.0
+pyyaml>=6.0.1
+
+# 5. MLOps & Evaluation
+mlflow>=2.11.0
+ragas>=0.1.5
+pandas>=2.2.1
+
+# 6. Utilities
+tqdm>=4.66.2
