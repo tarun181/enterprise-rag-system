@@ -1,5 +1,7 @@
 # Enterprise Knowledge Assistant (Phase 1)
 
+![Enterprise Knowledge Assistant UI](demo.png)
+
 This repository contains the core intelligence layer of a multi-agent Retrieval-Augmented Generation (RAG) system. It is specifically optimized to run an open-source model (Qwen 3.5 7B) on a single NVIDIA T4 GPU (16GB VRAM) using 4-bit NF4 quantization.
 
 ## System Architecture
