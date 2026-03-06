@@ -1,20 +1,33 @@
-# Enterprise Knowledge Assistant (Phase 1)
+# 🧠 Enterprise Knowledge Assistant (Hybrid RAG)
 
-![Enterprise Knowledge Assistant UI](demo.PNG)
+A production-grade Retrieval-Augmented Generation (RAG) system built to provide hallucination-free, highly accurate answers from internal documentation. 
 
-This repository contains the core intelligence layer of a multi-agent Retrieval-Augmented Generation (RAG) system. It is specifically optimized to run an open-source model (Qwen 3.5 7B) on a single NVIDIA T4 GPU (16GB VRAM) using 4-bit NF4 quantization.
+This project implements a two-stage hybrid retrieval pipeline (FAISS + BM25) with Cross-Encoder reranking, powered by a locally hosted, mathematically optimized Large Language Model (Qwen 3.5).
 
-## System Architecture
-The system uses **LangGraph** to route queries intelligently rather than relying on a static chain.
-1. **Router Agent**: Directs traffic.
-2. **Retrieval Agent**: Hybrid FAISS (Dense) + BM25 (Sparse) + Cross-Encoder Reranking.
-3. **Summarization Agent**: Synthesizes output.
-4. **Critic Agent**: Validates output to prevent hallucinations.
+## System UI
+![Enterprise Knowledge Assistant UI](demo.PNG) 
 
-## Setup Instructions
-1. Install requirements: `pip install -r requirements.txt` (including `transformers`, `bitsandbytes`, `langgraph`, `faiss-cpu`, `mlflow`).
-2. Place raw HTML/Markdown files in `data/raw_docs/`.
-3. Adjust `configs/` YAML files as needed.
-4. Run Ingestion: `python src/pipelines/ingest_data.py`
-5. Run Evaluation/MLflow: `python src/pipelines/run_experiment.py`
-6. View logs: `mlflow ui --backend-store-uri sqlite:///mlruns/mlflow.db`
+### 1. Two-Stage Retrieval Pipeline
+To solve the "semantic trap" of dense-only embeddings, this system uses a hybrid approach:
+* **Stage 1 (Broad Search):** Combines **FAISS** (Dense vector search for semantic meaning) and **BM25** (Sparse search for exact keyword matching) using an Ensemble Retriever to cast a wide net (Top-K = 20).
+* **Stage 2 (Precision Reranking):** Passes the retrieved documents through a **Cross-Encoder** (`ms-marco-MiniLM`) to strictly score and rerank the context pairs, sending only the most highly relevant chunks (Top-K = 8) to the LLM.
+
+### 2. Optimized Inference Engine
+* **Model:** Qwen 3.5 (4-Billion Parameters) deployed completely locally.
+* **Quantization:** 4-bit NF4 quantization via `bitsandbytes` to fit within constrained GPU VRAM (NVIDIA T4).
+* **Attention Optimization:** Utilizes PyTorch's native Scaled Dot Product Attention (SDPA) for memory-efficient, FlashAttention-like latency reductions without requiring custom C++ binaries.
+
+## ✨ Key Features
+* **Chain of Thought (CoT) Transparency:** Parses and displays the AI's internal reasoning process (`<think>` tags) in a collapsible UI element to build user trust.
+* **Dynamic Citations:** Automatically extracts metadata (Document Source, Section Header, URL) from the retrieved chunks and displays clickable references.
+* **Strict Guardrails:** System prompts and retrieval thresholds are strictly engineered to prevent hallucinations. If context is missing, the agent safely aborts and notifies the user.
+* **Decoupled Deployment:** RESTful API architecture allows the backend engine to scale independently of the frontend UI.
+
+## 💻 Tech Stack
+* **Frontend:** Streamlit
+* **Backend:** FastAPI, Uvicorn, Pydantic
+* **LLM & Inference:** Hugging Face Transformers, PyTorch (SDPA), BitsAndBytes (4-bit quantization)
+* **Retrieval & RAG:** LangChain, FAISS, BM25, SentenceTransformers (Cross-Encoder)
+* **Data Ingestion:** BeautifulSoup, HTMLHeaderTextSplitter
+ators
+└── requirements.txt       # Python dependencies
